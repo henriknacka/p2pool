@@ -8,6 +8,24 @@ from p2pool.util import math
 # changes can be done by changing one, then the other
 
 nets = dict(
+    xivra=math.Object(
+        PARENT=networks.nets['xivra'],
+        SHARE_PERIOD=12, # seconds target spacing
+        CHAIN_LENGTH=24*60*60//10, # shares
+        REAL_CHAIN_LENGTH=24*60*60//10, # shares
+        TARGET_LOOKBEHIND=240, # shares coinbase maturity
+        SPREAD=24, # blocks
+        IDENTIFIER='626C61636B636F6D'.decode('hex'),
+        PREFIX='707574696E672E6F'.decode('hex'),
+        P2P_PORT=23666,
+        MIN_TARGET=0,
+        MAX_TARGET=2**256//2**20 - 1,
+        PERSIST=True,
+        WORKER_PORT=8866,
+        BOOTSTRAP_ADDRS='xiv.ams.blackcomputing.org xiv.sf.blackcomputing.org'.split(' '),
+        ANNOUNCE_CHANNEL='#p2pool-alt',
+        VERSION_CHECK=lambda v: True,
+    ),
     bitcoin=math.Object(
         PARENT=networks.nets['bitcoin'],
         SHARE_PERIOD=30, # seconds

@@ -16,6 +16,27 @@ def check_genesis_block(bitcoind, genesis_block_hash):
         defer.returnValue(True)
 
 nets = dict(
+    xivra=math.Object(
+        P2P_PREFIX='bec1ddd4'.decode('hex'),
+        P2P_PORT=43520,
+        ADDRESS_VERSION=75,
+        RPC_PORT=43519,
+        RPC_CHECK=defer.inlineCallbacks(lambda bitcoind: defer.returnValue(
+            'xivraaddress' in (yield bitcoind.rpc_help()) and
+            not (yield bitcoind.rpc_getinfo())['testnet']
+        )),
+        SUBSIDY_FUNC=lambda height: 5000*100000000 >> (height + 1)//840000,
+        POW_FUNC=lambda data: pack.IntType(256).unpack(__import__('ltc_scrypt').getPoWHash(data)),
+        BLOCK_PERIOD=75, # s targetspacing
+        SYMBOL='XIV',
+        CONF_FILE_FUNC=lambda: os.path.join(os.path.join(os.environ['APPDATA'], 'xivra') if platform.system() == 'Windows' else os.path.expanduser('~/Library/Application Support/xivra/') if platform.system() == 'Darwin' else os.path.expanduser('~/.xivra'), 'xivra.conf'),
+        BLOCK_EXPLORER_URL_PREFIX='http://xivexplorer.blackcomputing.org/block/',
+        ADDRESS_EXPLORER_URL_PREFIX='http://xivexplorer.blackcomputing.org/address/',
+        TX_EXPLORER_URL_PREFIX='http://xivexplorer.blackcomputing.org/tx/',
+        SANE_TARGET_RANGE=(2**256//1000000000 - 1, 2**256//1000 - 1),
+        DUMB_SCRYPT_DIFF=2**16,
+        DUST_THRESHOLD=1e8,
+    ),
     bitcoin=math.Object(
         P2P_PREFIX='f9beb4d9'.decode('hex'),
         P2P_PORT=8333,
